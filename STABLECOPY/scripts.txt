@@ -1,0 +1,303 @@
+// Connect to the Socket.IO server
+const socket = io(); // Exactly ONE of these at the very top
+
+// --- Global Variables (Client-Side) ---
+let clientPlayers = []; // Exactly ONE of these, stores latest player list from server
+const maxPlayers = 10;
+const roles = [ // Keep client-side for rendering labels
+  "Captain", "Vice Captain", "Ace", "Flex 1/Tactician", "Tank",
+  "Wildcard", "Mascot", "Flex 2/Support", "Wife/Husband", "Crazy Ex",
+  "Mommy/Daddy", "Baby Mommy/Baby Daddy", "Side Piece", "Other Side Piece",
+  "Best Friend", "Brother/Sister"
+];
+// Added state variables needed for assignRoleRequest
+let clientCurrentPlayerId = null;
+let clientIsPickAvailable = false;
+
+// --- DOM Elements ---
+const numberDisplay = document.getElementById("numberDisplay");
+const removeButton = document.getElementById("removeButton");
+const addButton = document.getElementById("addButton");
+const minValueInput = document.getElementById("minValue");
+const maxValueInput = document.getElementById("maxValue");
+const generateButton = document.querySelector('button[onclick="generateNumber()"]') || document.getElementById('generateButton');
+const playerBoardDiv = document.getElementById("playerBoard");
+const summaryBoardDiv = document.getElementById("summaryBoard");
+const turnIndicatorDiv = document.getElementById("turnIndicator");
+
+// --- Socket.IO Event Listeners (Client-Side) ---
+
+socket.on('initialState', (state) => {
+    console.log('Received initial state:', state);
+    if (!state) return;
+    minValueInput.value = state.min;
+    maxValueInput.value = state.max;
+    updateNumberDisplay(state.currentNumber); // Initial display update
+    clientPlayers = state.players || [];
+    clientCurrentPlayerId = state.currentPlayerId;
+    clientIsPickAvailable = state.canAddBack; // Use canAddBack as proxy
+    toggleButtonState(state); // Pass full state
+    renderPlayers(clientPlayers);
+    renderSummary(clientPlayers);
+    updateTurnIndicator(clientCurrentPlayerId, state.draftHasStarted);
+    if (generateButton) {
+        toggleButton(generateButton, state.poolSize > 0 && !state.canRemove);
+    }
+});
+
+socket.on('numberGenerated', (numberFromServer) => {
+    console.log('Received number:', numberFromServer);
+    updateNumberDisplay(numberFromServer); // Update display when number generated
+    if (generateButton && numberFromServer !== null) {
+         toggleButton(generateButton, false);
+    }
+});
+
+socket.on('rangeSet', (data) => {
+    console.log(`Range confirmed by server: ${data.min} to ${data.max}`);
+    alert(`Range set: ${data.min} to ${data.max}`);
+    minValueInput.value = data.min;
+    maxValueInput.value = data.max;
+});
+
+socket.on('updatePoolStatus', (poolSize) => {
+    console.log('Pool size updated:', poolSize);
+    if (generateButton) {
+        const canRemove = removeButton ? !removeButton.disabled : false;
+        toggleButton(generateButton, poolSize > 0 && !canRemove);
+    }
+});
+
+socket.on('updateRemoveAddButtons', (state) => {
+    console.log('Updating button states:', state);
+    clientIsPickAvailable = state.canAddBack;
+    toggleButtonState(state);
+    renderPlayers(clientPlayers);
+});
+
+socket.on('updatePlayers', (playersFromServer) => {
+    console.log('Received updated players:', playersFromServer);
+    clientPlayers = playersFromServer || [];
+    renderPlayers(clientPlayers);
+    renderSummary(clientPlayers);
+});
+
+socket.on('updateTurn', (turnData) => {
+    console.log('Received turn update:', turnData);
+    clientCurrentPlayerId = turnData.currentPlayerId;
+    updateTurnIndicator(clientCurrentPlayerId, turnData.draftHasStarted);
+    renderPlayers(clientPlayers);
+});
+
+socket.on('rangeError', (message) => { alert(`Server Error: ${message}`); });
+socket.on('poolEmpty', (message) => { alert(`Server Info: ${message}`); });
+socket.on('error', (message) => { alert(`Server Error: ${message}`); });
+
+
+// --- Client-Side Functions modified for Socket.IO ---
+
+function setRange() {
+  const min = parseInt(minValueInput.value) || 1;
+  const max = parseInt(maxValueInput.value) || 100;
+  if (min >= max) { alert("Minimum value must be less than maximum value."); return; }
+  console.log(`Emitting setRange: ${min}, ${max}`);
+  socket.emit('setRange', { min, max });
+}
+
+function generateNumber() {
+  console.log('Emitting generateNumberRequest');
+  socket.emit('generateNumberRequest');
+}
+
+function removeNumber() {
+  console.log("Emitting removeNumberRequest");
+  socket.emit('removeNumberRequest');
+}
+
+function addNumberBack() {
+  console.log("Emitting addNumberBackRequest");
+  socket.emit('addNumberBackRequest');
+}
+
+// --- Helper function to update the display ---
+function updateNumberDisplay(number) {
+    if (numberDisplay) { // Check if element exists
+        if (number !== null && number !== undefined) {
+            // <<< CORRECTED LINE: Removed the extra backslashes and quotes
+            numberDisplay.textContent = `$top #${number}`;
+        } else {
+            numberDisplay.textContent = "#?"; // Reset display
+        }
+    }
+}
+
+function toggleButtonState(state) { // Expects state object
+    if (!state) return;
+    toggleButton(removeButton, state.canRemove);
+    toggleButton(addButton, state.canAddBack);
+    if (generateButton) {
+        const poolHasItems = state.poolSize !== undefined ? state.poolSize > 0 : true;
+        toggleButton(generateButton, poolHasItems && !state.canRemove);
+    }
+}
+
+// --- Player Management Functions (Emit Events) ---
+
+function addPlayer() {
+    console.log("Emitting addPlayerRequest");
+    socket.emit('addPlayerRequest');
+}
+
+function removePlayer() {
+    console.log("Emitting removePlayerRequest");
+    socket.emit('removePlayerRequest');
+}
+
+function shufflePlayers() {
+    console.log("Emitting shufflePlayersRequest");
+    socket.emit('shufflePlayersRequest');
+}
+
+function updatePlayerName(id, name) {
+    console.log(`Emitting updatePlayerName for ${id}: ${name}`);
+    socket.emit('updatePlayerName', { id, name });
+}
+
+function handleAssignRoleClick(playerId, roleName) {
+    console.log(`Assign button clicked for Player ${playerId}, Role ${roleName}`);
+    if (playerId !== clientCurrentPlayerId) { alert("It's not your turn!"); return; }
+    if (!clientIsPickAvailable) { alert("No character rank/number has been claimed yet (click Remove first)."); return; }
+    const characterName = prompt(`Enter character name for role "${roleName}":`);
+    if (characterName !== null && characterName.trim() !== '') {
+        console.log(`Emitting assignRoleRequest for Player ${playerId}, Role ${roleName}, Character ${characterName}`);
+        socket.emit('assignRoleRequest', {
+            playerId: playerId,
+            roleName: roleName,
+            characterName: characterName.trim()
+        });
+        clientIsPickAvailable = false;
+        renderPlayers(clientPlayers);
+    } else {
+        console.log("Role assignment cancelled by user.");
+    }
+}
+
+// --- Render Functions (Accept players array) ---
+function renderPlayers(playersToRender) {
+  const currentPlayers = Array.isArray(playersToRender) ? playersToRender : [];
+  if (playerBoardDiv) {
+      playerBoardDiv.innerHTML = currentPlayers.map(player => {
+          const isCurrentTurn = (player.id === clientCurrentPlayerId);
+          const showAssignButtons = isCurrentTurn && clientIsPickAvailable;
+          return `
+            <div class="player-card" data-player-id="${player.id}" style="${isCurrentTurn ? 'border: 2px solid lightgreen; box-shadow: 0 6px 15px rgba(144, 238, 144, 0.4);' : ''}">
+              <input type="text" value="${player.name}"
+                onchange="updatePlayerName(${player.id}, this.value)" placeholder="Player Name">
+              ${roles.map(role => `
+                <div class="role-input">
+                  <label>${role}:</label>
+                  <input type="text" value="${player.roles[role] || ''}" readonly placeholder="Assign Role">
+                  ${showAssignButtons && !player.roles[role] ?
+                    `<button class="assign-button" onclick="handleAssignRoleClick(${player.id}, '${role}')">Assign</button>`
+                    : ''
+                  }
+                </div>
+              `).join('')}
+            </div>
+          `;
+        }).join('');
+  }
+}
+
+function renderSummary(playersToRender) {
+  const currentPlayers = Array.isArray(playersToRender) ? playersToRender : [];
+  if (summaryBoardDiv) {
+      summaryBoardDiv.innerHTML = currentPlayers.map(player => `
+        <div class="summary-card" data-player-id="${player.id}">
+          <h3>${player.name}</h3>
+          ${roles.map(role => `
+            <p><strong>${role}:</strong> ${player.roles[role] || "N/A"}</p>
+          `).join('')}
+        </div>
+      `).join('');
+  }
+}
+
+function updateTurnIndicator(currentPlayerId, draftHasStarted) {
+    if (!turnIndicatorDiv) return;
+    if (!draftHasStarted) {
+        turnIndicatorDiv.textContent = "Waiting for draft to start...";
+    } else if (currentPlayerId !== null) {
+        const currentPlayer = clientPlayers.find(p => p.id === currentPlayerId);
+        if (currentPlayer) {
+            turnIndicatorDiv.textContent = `Current Turn: ${currentPlayer.name}`;
+        } else {
+            turnIndicatorDiv.textContent = "Waiting for player data...";
+        }
+    } else {
+        turnIndicatorDiv.textContent = "Draft complete!";
+    }
+}
+
+function startDraft() {
+    console.log("Emitting startDraftRequest");
+    socket.emit('startDraftRequest');
+}
+
+
+// --- Utility Functions ---
+function toggleButton(buttonElement, enable) {
+  if (buttonElement) {
+      buttonElement.disabled = !enable;
+  }
+}
+
+// --- Waifu Search Function (Keep as is) ---
+async function searchWaifu() {
+    console.log("Search waifu function called");
+    const query = document.getElementById("searchInput").value.trim();
+    const resultsContainer = document.getElementById("searchResults");
+    if (!query) { resultsContainer.innerHTML = ""; return; }
+    try {
+        const graphqlQuery = {
+            query: `
+              query ($search: String) {
+                Page(perPage: 5) {
+                  characters(search: $search) {
+                    id
+                    name { full native }
+                    image { medium }
+                    media(sort: POPULARITY_DESC, type: ANIME, isMain: true) {
+                      nodes { title { romaji english } }
+                    }
+                  }
+                }
+              }
+            `,
+            variables: { search: query },
+          };
+        const response = await fetch("https://graphql.anilist.co", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify(graphqlQuery),
+        });
+        const data = await response.json();
+        const characters = data?.data?.Page?.characters || [];
+        resultsContainer.innerHTML = characters.map(character => {
+            const mediaTitle = character?.media?.nodes?.[0]?.title?.romaji || "Unknown";
+            const nativeName = character?.name?.native || "N/A";
+            return `
+                <div>
+                    <img src="${character?.image?.medium}" alt="${character?.name?.full}" style="width:50px; border-radius:8px; vertical-align: middle; margin-right: 10px;">
+                    <span style="display: inline-block; vertical-align: middle;">
+                        <h3>${character?.name?.full} (${nativeName})</h3>
+                        <p><strong>Appears in:</strong> ${mediaTitle}</p>
+                    </span>
+                </div>
+            `;
+        }).join("");
+    } catch (error) {
+        resultsContainer.innerHTML = "<p>Failed to fetch data. Please try again later.</p>";
+        console.error("Error fetching character data:", error);
+    }
+}

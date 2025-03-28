@@ -1,0 +1,152 @@
+:root {
+  --background-color: #181818;
+  --container-bg: #333;
+  --border-color: #444;
+  --text-color: #ddd;
+  --header-bg: #282828;
+  --highlight-color: #555;
+}
+
+body {
+  font-family: 'Roboto', Arial, sans-serif; /* Updated font-family */
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  background-color: #0d0d0d; /* Deeper dark background */
+  color: #ccc;
+  font-size: 14px;
+}
+
+.header {
+  background: linear-gradient(to right, #1a1a1a, #333);
+  color: white;
+  padding: 10px;
+  font-size: 20px;
+  font-weight: bold;
+  border-bottom: 2px solid #444;
+}
+
+.number-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #222;
+  padding: 10px;
+  gap: 10px;
+  border-bottom: 1px solid #333;
+}
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 10px;
+}
+
+.box {
+  background-color: var(--container-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  padding: 15px;
+  width: 32%;
+  max-height: 450px;
+  overflow-y: auto;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+h2 {
+  font-size: 16px;
+  color: var(--text-color);
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 5px;
+}
+
+input, button {
+  font-size: 14px;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid var(--highlight-color);
+  background-color: #222;
+  color: #ccc;
+  transition: all 0.3s ease;
+}
+
+button {
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(255, 255, 255, 0.1) inset; /* Added shadow */
+}
+
+button:hover {
+  background-color: var(--container-bg);
+  transform: scale(1.05);
+}
+
+button:focus, input:focus {
+  outline: 2px solid var(--highlight-color);
+  outline-offset: 2px;
+}
+
+.number-display {
+  font-size: 18px;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #1a1a1a;
+  color: var(--text-color);
+  border: 1px solid #333;
+}
+
+.role-container {
+  margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+.search-results {
+  margin-top: 10px;
+  background-color: #333;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 10px;
+  color: #ddd;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.search-results div {
+  padding: 10px 0;
+  border-bottom: 1px solid #444;
+}
+
+.search-results div:last-child {
+  border-bottom: none;
+}
+
+.search-results h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #e0e0e0;
+}
+
+.search-results p {
+  margin: 5px 0;
+  font-size: 14px;
+  color: #bbb;
+}
+
+
+
+  .box {
+    width: 100%; /* Ensure full width in column layout */
+  }
+}
+
+/* New addition for visual cues */
+button:active {
+  transform: scale(0.95); /* Adds feedback on click */
+  background-color: var(--highlight-color);
+}
