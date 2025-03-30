@@ -11,68 +11,95 @@
     <h1>Anime Waifu Draft</h1>
   </header>
 
-</header>
-
-  <div id="turnIndicator" style="padding: 10px; font-weight: bold; background-color: #444; color: white; margin-bottom: 10px;">
+  <div id="turnIndicator" class="turn-indicator">
       Waiting for draft to start...
   </div>
 
- 
-
-  <!-- Random Number Generator Section -->
-  <section class="number-container">
-    <input type="number" id="minValue" placeholder="Min value" min="1" aria-label="Minimum Value">
-    <input type="number" id="maxValue" placeholder="Max value" min="1" aria-label="Maximum Value">
-    <button onclick="setRange()" aria-label="Set Range">Set Range</button>
+  
+  <section class="number-container rng-section">
+    <h3>Draft Settings (Pre-Draft Only)</h3>
+    <label for="minValue">Min Rank:</label>
+    <input type="number" id="minValue" aria-label="Minimum Value" value="1" >
+    <label for="maxValue">Max Rank:</label>
+    <input type="number" id="maxValue" aria-label="Maximum Value" value="15000" >
+    
+    <label for="initialRerolls">Re-rolls:</label>
+    <input type="number" id="initialRerolls" value="12" min="0" aria-label="Initial Re-rolls">
+    
+    <button onclick="setDraftSettings()" id="setSettingsButton" aria-label="Set Draft Settings">Set Settings</button>
   </section>
 
-  <section class="number-container">
-  <div class="number-display" id="numberDisplay" aria-live="polite">#?</div>
-  <button onclick="generateNumber()" aria-label="Generate Number">Generate</button>
-  <button onclick="removeNumber()" id="removeButton" disabled aria-label="Remove Number">Remove</button>
-  <button onclick="addNumberBack()" id="addButton" disabled aria-label="Add Back Number">Add Back</button>
-</section>
+  <section class="number-container rng-section">
+     <h3>Standard Generation</h3>
+     <div class="number-display" id="numberDisplay" aria-live="polite">#?</div>
+     <button onclick="generateNumber()" id="generateButton" aria-label="Generate Number">Generate Standard</button>
+     
+     <button onclick="useReroll()" id="rerollButton" disabled aria-label="Use Re-roll">Use Re-roll</button>
+     
+     <button onclick="removeNumber()" id="removeButton" disabled aria-label="Claim Rank (Remove)">Claim Rank</button>
+     <button onclick="addNumberBack()" id="addButton" disabled aria-label="Undo Claim (Add Back)">Undo Claim</button>
+  </section>
+
+  
+  <section class="number-container rng-section protected-pick-section">
+      <h3>Protected Pick (1 Use)</h3>
+      <input type="number" id="protectedMin" placeholder="Protected Min" min="1" aria-label="Protected Minimum Value">
+      <input type="number" id="protectedMax" placeholder="Protected Max" min="1" aria-label="Protected Maximum Value">
+      <button onclick="generateProtectedPick()" id="protectedGenerateButton" disabled aria-label="Generate Protected Pick">Generate Protected</button>
+  </section>
 
 
-  <!-- Main Content -->
-  <div class="container">
-    <!-- Player Draft Board Section -->
-    <div class="box">
+  
+  <div class="container"> 
+  
+    <div class="box player-board-box">
       <h2>Player Draft Board</h2>
       <div id="playerBoard"></div>
-      <button onclick="addPlayer()">Add Player</button>
-      <button onclick="removePlayer()">Remove Player</button>
-      <button onclick="shufflePlayers()">Shuffle Players</button>
-<button onclick="startDraft()">Start Draft</button>
+      <div class="player-management-buttons">
+          <button onclick="addPlayer()">Add Player</button>
+          <button onclick="removePlayer()">Remove Player</button>
+          <button onclick="shufflePlayers()">Shuffle Players</button>
+          <button onclick="startDraft()">Start Draft</button>
+          <button id="adminEditButton" onclick="toggleAdminEdit()" style="display: none;">Enable Post-Draft Edits</button>
+      </div>
     </div>
 
-   <!-- Waifu Search Section -->
-<div class="box">
-  <h2>Search Waifu Info</h2>
-  <input type="text" id="searchInput" placeholder="Search for waifu..." oninput="searchWaifu()" aria-label="Search Waifu">
-  <div id="searchResults" class="search-results"></div>
-</div>
+   
+    <div class="box search-box">
+      <h2>Search Character Info (AniList)</h2>
+      <input type="text" id="searchInput" placeholder="Search for character..." oninput="searchWaifu()" aria-label="Search Waifu">
+      <div id="searchResults" class="search-results"></div>
+    </div>
 
+    
+    <div class="box draft-log-box">
+      <h2>Draft Log</h2>
+      <div id="draftLogEntries"></div>
+    </div>
 
-
-    <!-- Draft Summary Section -->
-    <div class="box">
+    
+    <div class="box draft-summary-box">
       <h2>Draft Summary</h2>
-      <div id="summaryBoard"></div>
+      <div id="summaryBoard"></div> 
+      
     </div>
+
   </div>
 
+  
+  <script src="/socket.io/socket.io.js"></script>
+  
   <script src="scripts.js" defer></script>
 
-<script src='https://cdn.jsdelivr.net/npm/@widgetbot/crate@3' async defer>
+  
+  
+  <script src='https://cdn.jsdelivr.net/npm/@widgetbot/crate@3' async defer>
     new Crate({
         server: '580792540358377483', // LEAFS NATION
         channel: '807840301392723998' // #server2
     })
 </script>
+  
 
-<script src="/socket.io/socket.io.js"></script>
-
-<script src="scripts.js" defer></script>
 </body>
 </html>
