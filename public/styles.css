@@ -1,262 +1,476 @@
+/* styles.css (Mobile Optimizations) */
 :root {
-  --background-color: #181818;
-  --container-bg: #333;
-  --border-color: #444;
-  --text-color: #ddd;
-  --header-bg: #282828;
-  --highlight-color: #555;
-  --highlight-bg: #404040; 
- }
+  --background-color: #1a1d21;
+  --container-bg: #282c34;
+  --border-color: #4a4f58;
+  --text-color: #abb2bf;
+  --header-bg: #21252b;
+  --highlight-color: #61afef; /* Blue */
+  --secondary-highlight: #98c379; /* Green */
+  --warning-color: #e5c07b; /* Yellow/Orange for re-roll button? */
+  --button-bg: #3a3f4b;
+  --button-text: #dcdfe4;
+  --input-bg: #21252b;
+  --error-color: #e06c75; /* Red */
+}
 
 body {
-  font-family: 'Roboto', Arial, sans-serif; 
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   text-align: center;
   margin: 0;
   padding: 0;
-  background-color: #0d0d0d; 
- color: #ccc;
+  background-color: var(--background-color);
+  color: var(--text-color);
   font-size: 14px;
+  line-height: 1.5;
+  /* Improve text rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .header {
-  background: linear-gradient(to right, #1a1a1a, #333);
+  background: var(--header-bg);
   color: white;
- padding: 10px;
-  font-size: 20px;
-  font-weight: bold;
-  border-bottom: 2px solid var(--border-color);
+  padding: 12px 20px;
+  font-size: 20px; /* Slightly smaller */
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 15px;
+}
+
+.turn-indicator {
+    padding: 10px 15px;
+    font-weight: bold;
+    background-color: var(--container-bg);
+    color: var(--secondary-highlight);
+    margin-bottom: 15px;
+    border-radius: 4px;
+    display: inline-block;
+    border: 1px solid var(--border-color);
+    max-width: 90%; /* Prevent overflow on small screens */
+    box-sizing: border-box;
 }
 
 .number-container {
   display: flex;
   justify-content: center;
   align-items: center;
- background-color: #222;
-  padding: 10px;
+  background-color: var(--header-bg);
+  padding: 12px 10px; /* Adjust padding */
   gap: 10px;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
 }
+
+/* Styling for RNG sections */
+.rng-section {
+    border-bottom: none;
+    padding: 10px 10px; /* Consistent padding */
+}
+.rng-section:not(:last-of-type) {
+     border-bottom: 1px dashed var(--border-color);
+}
+.rng-section h3 {
+    color: var(--secondary-highlight);
+    font-size: 14px;
+    margin: 0 10px 0 0; /* Adjust margin */
+    font-weight: 500;
+    flex-shrink: 0;
+    width: 100%; /* Make title take full width initially */
+    text-align: center; /* Center title */
+    margin-bottom: 8px; /* Add space below title */
+}
+.rng-section label {
+    margin-left: 5px; /* Reduce margin */
+    font-size: 13px;
+    white-space: nowrap; /* Prevent labels breaking */
+}
+
+/* Adjust input widths */
+.number-container input[type="number"] {
+    width: 75px; /* Consistent smaller width */
+    margin-right: 5px;
+    padding: 8px; /* Adjust padding */
+}
+.protected-pick-section input[type="number"] {
+    width: 90px; /* Slightly larger for protected */
+}
+#initialRerolls {
+    width: 50px;
+}
+
 
 .container {
   display: flex;
+  /* Switch to grid for potentially better control later, but flex is okay for now */
   justify-content: space-between;
   gap: 15px;
- padding: 10px;
-  /* Align items at the top */
-  align-items: flex-start; 
+  padding: 20px 15px;
+  flex-wrap: wrap;
 }
 
 .box {
   background-color: var(--container-bg);
   border: 1px solid var(--border-color);
-  border-radius: 5px;
+  border-radius: 8px;
   padding: 15px;
-  width: 32%;
-  max-height: 450px; 
- overflow-y: auto;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 calc(25% - 15px);
+  min-width: 260px;
+  max-height: 70vh;
+  overflow-y: auto;
+  /* Smooth scrolling */
+  scroll-behavior: smooth;
+  /* Nicer scrollbars (optional) */
+  scrollbar-width: thin;
+  scrollbar-color: var(--highlight-color) var(--input-bg);
 }
+/* Webkit scrollbar styling (optional) */
+.box::-webkit-scrollbar { width: 8px; }
+.box::-webkit-scrollbar-track { background: var(--input-bg); border-radius: 4px; }
+.box::-webkit-scrollbar-thumb { background-color: var(--highlight-color); border-radius: 4px; border: 2px solid var(--input-bg); }
+
 
 h2 {
-  font-size: 16px;
+  font-size: 17px;
   color: var(--text-color);
-  margin-bottom: 10px;
- border-bottom: 1px solid var(--border-color);
-  padding-bottom: 5px;
+  margin-top: 0;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 8px;
+  font-weight: 600;
 }
 
-/* Style for general inputs and placeholder text */
-input[type="number"], input[type="text"] { /* Apply to specific types */
+input[type="text"],
+input[type="number"] {
   font-size: 14px;
-  padding: 8px;
-  border-radius: 5px;
-  border: 1px solid var(--highlight-color);
- background-color: #222;
-  color: #ccc;
-  transition: all 0.3s ease;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  transition: border-color 0.3s ease;
+  margin-bottom: 10px; /* Restore consistent margin */
+  box-sizing: border-box; /* Include padding/border in width */
+}
+/* Ensure text inputs take full width */
+input[type="text"] {
+    width: 100%;
+}
+/* Number inputs take specific widths set above */
+input[type="number"] {
+    /* Widths set in .number-container section */
 }
 
-/* Style for name input specifically */
-.player-card input[type="text"] {
-  width: calc(100% - 18px); /* Adjust width considering padding+border */
-  margin-bottom: 10px;
-}
 
+input:focus {
+  outline: none;
+  border-color: var(--highlight-color);
+  box-shadow: 0 0 0 2px rgba(97, 175, 239, 0.3);
+}
 
 button {
   font-size: 14px;
-  padding: 8px 12px; /* Slightly more horizontal padding */
-  border-radius: 5px;
-  border: 1px solid var(--highlight-color);
-  background-color: #222;
-  color: #ccc;
-  transition: all 0.3s ease;
+  padding: 10px 15px;
+  border-radius: 4px;
+  border: none;
+  background-color: var(--button-bg);
+  color: var(--button-text);
   cursor: pointer;
- box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(255, 255, 255, 0.1) inset; 
- }
-
-button:hover {
-  background-color: var(--container-bg);
-  transform: scale(1.05);
+  transition: background-color 0.2s ease, transform 0.1s ease; /* Faster transition */
+  font-weight: 500;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  white-space: nowrap; /* Prevent button text wrapping */
 }
+/* Specific button styles */
+#rerollButton { background-color: var(--warning-color); color: #1a1d21; }
+#rerollButton:hover:not(:disabled) { background-color: #fad68b; color: #1a1d21; }
+#rerollButton:disabled { background-color: #5a5240; color: #9a917d; }
+#rerollButton:active:not(:disabled) { background-color: #f0ad4e; }
 
-button:focus, input:focus {
-  outline: 2px solid var(--highlight-color);
-  outline-offset: 2px;
- }
+button:hover:not(:disabled) { /* Ensure hover only applies when not disabled */
+  background-color: var(--highlight-color);
+  color: white;
+}
+/* Keep re-roll hover distinct */
+#rerollButton:hover:not(:disabled) { background-color: #fad68b; color: #1a1d21; }
+
+button:active:not(:disabled) {
+  transform: scale(0.98);
+  background-color: var(--secondary-highlight);
+}
+#rerollButton:active:not(:disabled) { background-color: #f0ad4e; }
 
 button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
+  background-color: #3a3f4b;
+  color: #6a737d;
+  cursor: not-allowed;
+  box-shadow: none;
+  opacity: 0.7; /* Make disabled buttons slightly faded */
 }
+#rerollButton:disabled { background-color: #5a5240; color: #9a917d; opacity: 0.7; }
+
 
 .number-display {
-  font-size: 18px;
-  padding: 10px;
-  border-radius: 5px;
-  background-color: #1a1a1a;
-  color: var(--text-color);
-  border: 1px solid #333;
- }
+  font-size: 20px;
+  padding: 10px 15px;
+  border-radius: 4px;
+  background-color: var(--input-bg);
+  color: var(--highlight-color);
+  border: 1px solid var(--border-color);
+  min-width: 110px; /* Slightly wider */
+  font-weight: bold;
+}
 
-/* Player card base style */
+/* Player Board Styling */
+#playerBoard {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
 .player-card {
-  border: 1px solid var(--border-color); 
-  padding: 10px;
+  background-color: #333943;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 15px;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.player-card[data-is-current-turn="true"] {
+  border-color: var(--secondary-highlight);
+  box-shadow: 0 0 10px rgba(152, 195, 121, 0.4);
+}
+
+.player-card input[type="text"] {
+  /* width: calc(100% - 22px); */ /* Use 100% width */
+  width: 100%;
   margin-bottom: 10px;
-  border-radius: 5px;
-  background-color: #2a2a2a; 
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); 
-  transition: all 0.3s ease; 
 }
 
-/* Enhanced style for current player's turn */
-.player-card.current-turn-player {
-  border: 2px solid lightgreen; 
-  box-shadow: 0 6px 15px rgba(144, 238, 144, 0.4); 
-  background-color: var(--highlight-bg); 
+.player-info {
+    font-size: 12px;
+    color: var(--text-color);
+    margin-bottom: 10px;
+    text-align: left;
+    font-style: italic;
 }
 
-/* NEW: Grid container for roles within a player card */
-.roles-grid-container {
-  display: grid;
-  /* Create two columns, adjust minmax for responsiveness if needed */
-  grid-template-columns: repeat(2, minmax(0, 1fr)); 
-  /* Gap between rows and columns */
-  gap: 4px 8px; 
-  margin-top: 10px; /* Space between name input and roles grid */
+.role-section {
+    margin-bottom: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border-color);
+}
+.role-section:first-of-type {
+    border-top: none;
+    padding-top: 0;
 }
 
-/* Styles for each role item within the grid */
+.role-section h4 {
+    font-size: 13px;
+    color: var(--secondary-highlight);
+    margin-bottom: 8px;
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
 .role-input {
   display: flex;
-  /* Align items vertically centered */
-  align-items: center; 
-  /* Remove bottom margin if grid gap handles spacing */
-  margin-bottom: 0; 
-  gap: 5px; 
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 8px;
+  flex-wrap: wrap; /* Allow wrapping within role input on small screens */
 }
 
 .role-input label {
-  /* Make label take less fixed space */
-  flex-basis: auto; 
-  width: auto; /* Let width be natural or set smaller fixed */
-  min-width: 70px; /* Ensure minimum width */
+  flex-basis: 130px; /* Adjust basis */
   text-align: right;
-  margin-right: 5px;
-  font-weight: bold;
-  color: #aaa; 
-  font-size: 13px; /* Slightly smaller label */
+  font-size: 13px;
+  color: var(--text-color);
+  flex-shrink: 0;
+  margin-bottom: 3px; /* Add space when wrapped */
 }
 
-/* Style for the role value paragraph */
-.role-value {
-  flex-grow: 1; 
-  margin: 0;
-  padding: 4px 6px; /* Reduced padding slightly */
-  border: 1px solid var(--highlight-color);
-  border-radius: 3px; /* Slightly smaller radius */
-  background-color: #282828; 
-  min-height: 1.2em; 
-  text-align: left;
-  overflow-wrap: break-word; 
-  color: #ccc;
-  font-size: 13px; /* Match label size */
+.role-input input[type="text"] {
+  flex-grow: 1;
+  min-width: 100px; /* Prevent input getting too small */
+  margin-bottom: 0;
+  background-color: #3a3f4b;
+  font-style: italic;
+  width: auto; /* Let flexbox handle width */
 }
 
-/* Style for assign button */
 .assign-button {
-  padding: 3px 6px; /* Even smaller padding */
-  font-size: 11px; /* Smaller font */
-  margin-left: auto; 
+  padding: 4px 8px;
+  font-size: 12px;
+  background-color: var(--secondary-highlight);
+  color: #1a1d21;
+  font-weight: bold;
+  flex-shrink: 0;
+  margin-left: auto; /* Push button to right if space allows */
+}
+.assign-button:hover {
+  background-color: #b3e6a1;
 }
 
-
-@media (max-width: 768px) {
-  .container {
-    flex-direction: column;
+.player-management-buttons {
+    margin-top: 20px;
+    display: flex;
     gap: 10px;
- }
-
-  .box {
-    width: auto; 
-    margin-left: 10px; 
-    margin-right: 10px;
-    max-height: none; 
-    overflow-y: visible; 
-  }
-  
-  /* Adjust grid for mobile if needed, maybe back to 1 column */
-  .roles-grid-container {
-      /* Example: switch back to single column on small screens */
-      /* grid-template-columns: 1fr; */
-  }
-
-  .role-input label {
-      min-width: 60px; /* Adjust label width for mobile */
-  }
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
-/* Search Results styling */
-/* ... (search results styles remain the same) ... */
+
+/* Search Results Styling */
 .search-results {
-  margin-top: 10px;
-  background-color: #333;
-  border: 1px solid #444;
-  border-radius: 8px;
+  margin-top: 15px;
+  background-color: var(--input-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
   padding: 10px;
-  color: #ddd;
-  max-height: 300px; 
- overflow-y: auto;
+  color: var(--text-color);
+  max-height: calc(65vh - 150px);
+  overflow-y: auto;
+}
+.search-results div { /* ... unchanged ... */ }
+.search-results div:last-child { /* ... unchanged ... */ }
+.search-results img { /* ... unchanged ... */ }
+.search-results span { /* ... unchanged ... */ }
+.search-results h3 { /* ... unchanged ... */ }
+.search-results p { /* ... unchanged ... */ }
+
+/* Draft Log Styling */
+#draftLogEntries { /* ... unchanged ... */ }
+.log-entry { /* ... unchanged ... */ }
+.log-entry:last-child { /* ... unchanged ... */ }
+.log-entry strong { /* ... unchanged ... */ }
+.log-entry .log-details { /* ... unchanged ... */ }
+
+/* Draft Summary Styling */
+#summaryBoard { /* ... unchanged ... */ }
+.summary-card { /* ... unchanged ... */ }
+.summary-card h3 { /* ... unchanged ... */ }
+.summary-card p { /* ... unchanged ... */ }
+.summary-card strong { /* ... unchanged ... */ }
+
+/* ========================== */
+/* Mobile Optimizations */
+/* ========================== */
+
+/* Medium Screens (Tablets / Large Phones) */
+@media (max-width: 1200px) {
+  .container {
+      gap: 10px; /* Reduce gap */
+      padding: 15px 10px; /* Reduce padding */
+  }
+  .box {
+      flex-basis: calc(50% - 10px); /* 2 columns */
+      max-height: none; /* Allow height growth */
+      min-width: 250px; /* Adjust min width */
+  }
 }
 
-.search-results div {
-  padding: 10px 0;
-  border-bottom: 1px solid #444;
-  text-align: left; 
+/* Small Screens (Phones) */
+@media (max-width: 768px) {
+  body { font-size: 13px; } /* Base mobile font size */
+  .header { font-size: 18px; padding: 10px 15px; }
+  .turn-indicator { margin-bottom: 10px; }
+
+  .number-container {
+      padding: 10px;
+      gap: 8px;
+  }
+  .rng-section h3 {
+      width: auto; /* Allow title to be inline */
+      margin-bottom: 0;
+  }
+
+  .container {
+    flex-direction: column; /* Stack boxes vertically */
+    padding: 10px;
+    gap: 10px;
+  }
+  .box {
+    flex-basis: auto; /* Reset basis for single column */
+    width: auto; /* Let it take full width */
+    margin-bottom: 10px;
+    padding: 12px; /* Reduce box padding */
+    max-height: none; /* Remove max-height */
+  }
+   .box:last-child {
+      margin-bottom: 0;
+  }
+
+  h2 { font-size: 16px; margin-bottom: 10px; }
+
+  button { padding: 8px 12px; font-size: 13px; } /* Adjust button padding */
+  input { padding: 8px; font-size: 13px; } /* Adjust input padding */
+
+  /* Make RNG inputs slightly wider on mobile */
+  .number-container input[type="number"] {
+      width: 70px;
+  }
+   .protected-pick-section input[type="number"] {
+      width: 80px;
+  }
+  #initialRerolls {
+      width: 45px;
+  }
+
+  .player-card input[type="text"] { width: 100%; } /* Ensure name input is full width */
+
+  .role-input {
+      gap: 5px; /* Reduce gap */
+      /* Optionally stack label and input vertically */
+      /* flex-direction: column; */
+      /* align-items: flex-start; */
+  }
+  .role-input label {
+      flex-basis: auto; /* Allow label to take natural width */
+      width: 100%; /* Make label full width if stacked */
+      text-align: left; /* Align left */
+      margin-bottom: 2px; /* Space below label if stacked */
+      /* flex-basis: 100px; */ /* Or keep fixed width if preferred */
+      /* text-align: right; */
+  }
+  .role-input input[type="text"] {
+       min-width: 120px; /* Ensure input isn't too tiny */
+  }
+  .assign-button {
+      margin-left: 0; /* Remove margin push */
+      margin-top: 5px; /* Add space if wrapped/stacked */
+  }
+
+  .summary-card strong { width: 110px; } /* Adjust summary label width */
 }
 
-.search-results div:last-child {
-  border-bottom: none;
- }
-
-.search-results h3 {
-  margin: 0;
-  font-size: 16px;
-  color: #e0e0e0;
+/* Very Small Screens */
+@media (max-width: 400px) {
+    .number-container {
+        /* Force stacking if needed */
+        /* flex-direction: column; */
+        /* align-items: stretch; */
+    }
+     .number-container button {
+        width: calc(50% - 5px); /* Two buttons per row */
+        box-sizing: border-box;
+     }
+     .number-container input[type="number"] {
+         width: 65px; /* Further reduce input size */
+     }
+     .protected-pick-section input[type="number"] {
+         width: 70px;
+     }
+     #initialRerolls {
+         width: 40px;
+     }
+     .role-input label {
+         flex-basis: 90px; /* Further reduce label width if needed */
+     }
+     .summary-card strong { width: 90px; }
 }
 
-.search-results p {
-  margin: 5px 0;
-  font-size: 14px;
- color: #bbb;
-}
-
-
-/* Active button feedback */
-button:active {
-  transform: scale(0.95); 
- background-color: var(--highlight-color);
-}
