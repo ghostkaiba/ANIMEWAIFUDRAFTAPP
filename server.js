@@ -21,7 +21,7 @@ let serverInitialRerolls = 12; // NEW: Configurable initial re-rolls
 let serverPlayers = []; // { id, name, roles: {}, protectedPickUsed: false, rerollsRemaining: 12 } // Added rerolls
 const maxPlayers = 10;
 const battleRoles = [ "Captain", "Vice Captain", "Ace", "Flex 1/Tactician", "Tank", "Wildcard", "Mascot", "Flex 2/Support" ];
-const relationshipRoles = [ "Mommy/Daddy", "Crazy Ex", "Mommy/Daddy", "Baby Mommy/Baby Daddy", "Side Piece", "Other Side Piece", "Best Friend", "Sibling" ];
+const relationshipRoles = [ "Waifu/Husbando", "Crazy Ex", "Mommy/Daddy", "Baby Mommy/Baby Daddy", "Side Piece", "Other Side Piece", "Best Friend", "Sibling" ];
 const allRoles = [...battleRoles, ...relationshipRoles];
 const totalRoles = allRoles.length;
 
