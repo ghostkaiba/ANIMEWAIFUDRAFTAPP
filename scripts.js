@@ -6,7 +6,7 @@ const socket = io();
 let clientPlayers = []; // Format: { id, name, roles: {}, protectedPickUsed: false, rerollsRemaining: 12 }
 const maxPlayers = 10;
 const battleRoles = [ "Captain", "Vice Captain", "Ace", "Flex 1/Tactician", "Tank", "Wildcard", "Mascot", "Flex 2/Support" ];
-const relationshipRoles = [ "Primary Partner", "Past Flame", "Guardian Figure", "The Anchor", "Secret Interest", "Further Complication", "Best Friend", "Sibling" ];
+const relationshipRoles = [ "Waifu/Husbando", "Crazy Ex", "Mommy/Daddy", "Baby Mommy/Baby Daddy", "Side Piece", "Other Side Piece", "Best Friend", "Sibling" ];
 const allRoles = [...battleRoles, ...relationshipRoles];
 
 // State variables
@@ -288,5 +288,6 @@ async function searchWaifu() { /* ... unchanged ... */
         } catch (error) { resultsContainer.innerHTML = "<p>Failed to fetch data.</p>"; console.error("Error fetching character data:", error); }
     }, 300);
 }
+
 
 
